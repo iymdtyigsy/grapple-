@@ -6,8 +6,13 @@ class App(ctk.CTk):
     def __init__(self, serial_port):
         super().__init__()
         self.title("Road Bump Counter")
-        self.geometry("400x300")
+        self.geometry("390x844")  # iPhone 14 Pro dimensions
         ctk.set_appearance_mode("light")
+        self.minsize(320, 568)  # Minimum mobile size (iPhone SE)
+        self.maxsize(430, 932)  # Maximum mobile size (iPhone 14 Pro Max)
+        
+        # Make window resizable for different mobile orientations
+        self.resizable(True, True)
 
         self.count = 0
         self.label = ctk.CTkLabel(self, text="Cars Passed: 0", font=("Arial", 20))
@@ -40,4 +45,3 @@ if __name__ == "__main__":
     # Change COM3 to your Arduino's port (on Mac it might be /dev/ttyUSB0)
     app = App("COM3")
     app.mainloop()
-

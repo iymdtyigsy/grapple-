@@ -4,40 +4,61 @@ class RoadBumpApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        # Window settings
         self.title("Road Bump Counter")
-        self.geometry("400x300")
+        self.geometry("320x568") 
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")
+        self.minsize(320, 568)
+        self.maxsize(320, 568)  
+        
+        self.mainframe = ctk.CTkFrame(
+            self,
+            fg_color="black",
+            corner_radius=0
+        )
+        self.mainframe.pack(fill="both", expand=True)
+        self.mainframe.pack_propagate(False)
 
-        # Counter variable
-        self.count = 0
+        self.mainframe_holder = ctk.CTkFrame(
+            self.mainframe,
+            fg_color="#D9D9D9",
+            width=320,
+            height=568
+        )
+        self.mainframe_holder.pack(padx=10, pady=10, fill="both", expand=True)
+        self.mainframe_holder.pack_propagate(False)
 
-        # Header Label
-        self.header = ctk.CTkLabel(self, text="Road Bump Counter", font=("Arial", 24))
-        self.header.pack(pady=20)
+        self.traffic_btn = ctk.CTkButton(
+            self.mainframe_holder,
+            text="Traffic map",
+            font=("Arial", 16),
+            height=50,
+            command=self.traffic_menu
+        )
+        self.traffic_btn.pack(pady=20, padx=20, fill="x")
 
-        # Counter Display
-        self.label = ctk.CTkLabel(self, text=f"Cars Passed: {self.count}", font=("Arial", 20))
-        self.label.pack(pady=10)
+        self.exit_btn = ctk.CTkButton(
+            self.mainframe_holder,
+            text="exit",
+            font=("Arial", 16),
+            height=50,
+            command=self.destroy
+        )
+        self.exit_btn.pack(pady=10, padx=20, fill="x")
 
-        # Increment Button
-        self.btn_count = ctk.CTkButton(self, text="Car Passed", command=self.increment)
-        self.btn_count.pack(pady=10)
-
-        # Reset Button
-        self.btn_reset = ctk.CTkButton(self, text="Reset", command=self.reset)
-        self.btn_reset.pack(pady=10)
-
-    # Increment counter
-    def increment(self):
-        self.count += 1
-        self.label.configure(text=f"Cars Passed: {self.count}")
-
-    # Reset counter
-    def reset(self):
-        self.count = 0
-        self.label.configure(text=f"Cars Passed: {self.count}")
+    def delete_current(self):
+        """Clears all widgets from the mainframe_holder."""
+        for widget in self.mainframe_holder.winfo_children():
+            widget.forget()
+    
+    def traffic_menu(self):
+        self.delete_current()
+        self.traffic_label = ctk.CTkLabel(
+            self.mainframe_holder,
+            text="Traffic map",
+            font=("Arial", 20)
+        )
+        self.traffic_label.pack(pady=20, padx=20)
 
 if __name__ == "__main__":
     app = RoadBumpApp()
