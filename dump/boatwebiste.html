@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroScout Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            margin-bottom: 30px;
+        }
+        .control-section {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 15px;
+            width: 300px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .on-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .off-btn {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>HydroScout Panel</h1>
+
+    <!-- Test Tube Control -->
+    <div class="control-section">
+        <h2>Test Tube Dipping</h2>
+        <p id="tube-status" class="status">Status: OFF</p>
+        <button class="on-btn" onclick="setTube(true)">Turn ON</button>
+        <button class="off-btn" onclick="setTube(false)">Turn OFF</button>
+    </div>
+
+    <!-- Oil Retrieval Control -->
+    <div class="control-section">
+        <h2>Oil Retrieval</h2>
+        <p id="oil-status" class="status">Status: OFF</p>
+        <button class="on-btn" onclick="setOil(true)">Turn ON</button>
+        <button class="off-btn" onclick="setOil(false)">Turn OFF</button>
+    </div>
+
+    <script>
+        function setTube(state) {
+            document.getElementById("tube-status").textContent = "Status: " + (state ? "ON ✅" : "OFF ❌");
+            console.log("Test tube dipping is now", state ? "ON" : "OFF");
+        }
+
+        function setOil(state) {
+            document.getElementById("oil-status").textContent = "Status: " + (state ? "ON ✅" : "OFF ❌");
+            console.log("Oil retrieval is now", state ? "ON" : "OFF");
+        }
+    </script>
+
+</body>
+</html>

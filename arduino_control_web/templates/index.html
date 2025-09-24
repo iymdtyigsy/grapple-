@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Boat Control</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+</head>
+<body style="text-align:center; font-family:Arial;">
+  <h1>Boat Control Panel</h1>
+
+  <h3>Test Tube Dipping</h3>
+  <button onclick="send('TUBE_ON')">Dip Tube</button>
+  <button onclick="send('TUBE_OFF')">Stop Tube</button>
+
+  <h3>Oil Retrieval</h3>
+  <button onclick="send('OIL_ON')">Start Oil</button>
+  <button onclick="send('OIL_OFF')">Stop Oil</button>
+
+  <h3>Status</h3>
+  <p id="status">Waiting for Arduino...</p>
+
+  <script>
+    const socket = io();
+
+    function send(cmd) {
+      socket.emit('command', cmd);
+    }
+
+    socket.on('status', function(msg) {
+      document.getElementById("status").textContent = "Arduino says: " + msg;
+    });
+  </script>
+</body>
+</html>
