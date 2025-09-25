@@ -3,148 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <title>Boat Control Interface</title>
-
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>🚤 Boat Control Interface</h1>
 
     <div class="main-container">
-        <!-- LEFT PANEL: Boat image + Map -->
+        <!-- LEFT: Boat image + map -->
         <div class="left-panel">
-            <img src="boat cam.png" alt="Boat Camera" class="boat-image">
-            <div id="map"></div>
+            <div class="image-map-container">
+                <img src="boat cam.png" alt="Boat Camera" class="boat-image">
+                <div id="map"></div>
+            </div>
         </div>
 
-        <!-- RIGHT PANEL: Status + Controls + Alerts -->
+        <!-- RIGHT: Status + Controls -->
         <div class="right-panel">
-            <!-- Alerts container -->
-            <div id="alerts-container"></div>
-
-            <!-- Battery -->
-            <div class="status-item">
-                <h3>🔋 Battery</h3>
-                <div class="battery-outline">
-                    <div class="battery-fill" id="battery"></div>
-                    <div class="battery-tip"></div>
+            <!-- Battery + Oil -->
+            <div class="status-container">
+                <div class="status-item">
+                    <h3>🔋 Battery</h3>
+                    <div class="battery-outline">
+                        <div class="battery-fill" id="battery"></div>
+                    </div>
+                    <p id="battery-text">Battery: 50%</p>
                 </div>
-                <p id="battery-text">Battery: 0%</p>
-            </div>
 
-            <!-- Oil Level -->
-            <div class="status-item">
-                <h3>🛢 Oil Level</h3>
-                <progress id="oil-progress" value="50" max="100"></progress>
-                <p id="oil-text">Oil: 50%</p>
+                <div class="status-item">
+                    <h3>🛢 Oil Level</h3>
+                    <progress id="oil-progress" value="50" max="100"></progress>
+                    <p id="oil-text">Oil: 50%</p>
+                </div>
             </div>
 
             <!-- Controls -->
             <div class="controls">
                 <h3>⚙️ Test Tube Control</h3>
                 <button onclick="toggleTube(true)">Dip Tube</button>
-                <button onclick="toggleTube(false)">Raise Tube</button>
+                <button onclick="toggleTube(false)">Stop Tube</button>
 
                 <h3>🛠 Oil Retrieval</h3>
-                <button onclick="toggleOil(true)">Start collection</button>
-                <button onclick="toggleOil(false)">Stop collection</button>
+                <button onclick="toggleOil(true)">Start Oil</button>
+                <button onclick="toggleOil(false)">Stop Oil</button>
+
+                <h3>🕹 Boat Control</h3>
+                <div class="arrow-controls">
+                    <button onclick="moveBoat('up')">⬆️</button>
+                    <div class="arrow-row">
+                        <button onclick="moveBoat('left')">⬅️</button>
+                        <button onclick="moveBoat('down')">⬇️</button>
+                        <button onclick="moveBoat('right')">➡️</button>
+                    </div>
+                </div>
             </div>
+
+            <!-- Alert Box -->
+            <div id="alert-box"></div>
         </div>
     </div>
 
+    <!-- Leaflet (Map library) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <script>
-        // ------------------------------
-        // Leaflet Map
-        var map = L.map('map').setView([0, -160], 4);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+        let batteryLevel = 50;
+        let oilLevel = 50;
+        let oilIncreasing = true;
 
-        var marker = L.marker([0, -160]).addTo(map)
-            .bindPopup('🚤 Boat Location')
-            .openPopup();
-
-        // ------------------------------
-        // Inline alert function
-        function showInlineAlert(message, type="warning") {
-            const container = document.getElementById("alerts-container");
-
-            const alertDiv = document.createElement("div");
-            alertDiv.textContent = message;
-            alertDiv.className = "inline-alert " + type;
-
-            container.appendChild(alertDiv);
-
-            setTimeout(() => {
-                container.removeChild(alertDiv);
-            }, 3000);
-        }
-
-        // ------------------------------
-        // Battery animation & alert
-        let batteryLevel = 0;
-        let batteryDirection = 1;
-        let batteryAlertShown = false;
-
+        // Battery + Oil updates
         setInterval(() => {
-            batteryLevel += batteryDirection * 1;
+            batteryLevel = Math.max(0, batteryLevel - 1);
 
-            if (batteryLevel >= 100) batteryDirection = -1;
-            if (batteryLevel <= 0) batteryDirection = 1;
+            if (oilIncreasing) {
+                oilLevel++;
+                if (oilLevel >= 100) {
+                    oilLevel = 100;
+                    oilIncreasing = false;
+                    showAlert("✅ Oil Tank Full!");
+                    setTimeout(() => { oilIncreasing = false; }, 3000);
+                }
+            } else {
+                oilLevel--;
+                if (oilLevel <= 0) oilIncreasing = true;
+            }
 
-            const batteryFill = document.getElementById("battery");
-            batteryFill.style.width = batteryLevel + "%";
-            batteryFill.style.backgroundColor =
+            // Battery update
+            document.getElementById("battery").style.width = batteryLevel + "%";
+            document.getElementById("battery").style.backgroundColor =
                 batteryLevel < 30 ? "red" :
                 batteryLevel < 60 ? "yellow" : "green";
+            document.getElementById("battery-text").textContent = "Battery: " + batteryLevel + "%";
 
-            document.getElementById("battery-text").textContent = "Battery: " + Math.round(batteryLevel) + "%";
-
-            // Battery alert when below 20%
-            if (batteryLevel <= 20 && !batteryAlertShown) {
-                batteryAlertShown = true;
-                showInlineAlert("⚠️ Battery is LOW!", "warning");
-                setTimeout(() => batteryAlertShown = false, 5000);
+            if (batteryLevel <= 20) {
+                showAlert("⚠️ Battery Low!");
             }
 
-        }, 100);
-
-        // ------------------------------
-        // Oil simulation & pause when full
-        let oilLevel = 50;
-        let oilPaused = false;
-
-        setInterval(() => {
-            if (!oilPaused) {
-                oilLevel = Math.min(100, oilLevel + 1);
-
-                document.getElementById("oil-progress").value = oilLevel;
-                document.getElementById("oil-text").textContent = "Oil: " + oilLevel + "%";
-
-                if (oilLevel === 100) {
-                    showInlineAlert("✅ Oil tank is full!", "success");
-
-                    oilPaused = true;
-                    setTimeout(() => {
-                        oilLevel = 0;
-                        oilPaused = false;
-                    }, 3000); // pause for 3 seconds
-                }
-            }
+            // Oil update
+            document.getElementById("oil-progress").value = oilLevel;
+            document.getElementById("oil-text").textContent = "Oil: " + oilLevel + "%";
         }, 1000);
 
-        // ------------------------------
-        // Button handlers
+        // Fake button handlers
         function toggleTube(on) {
-            showInlineAlert(on ? "Test Tube Dipped" : "Test Tube Raised", "success");
+            showAlert(on ? "Test Tube Dipping Started" : "Test Tube Dipping Stopped");
         }
 
         function toggleOil(on) {
-            showInlineAlert(on ? "Oil Retrieval Started" : "Oil Retrieval Stopped", "success");
+            showAlert(on ? "Oil Retrieval Started" : "Oil Retrieval Stopped");
         }
+
+        function moveBoat(direction) {
+            showAlert("Boat moving " + direction.toUpperCase() + "!");
+        }
+
+        function showAlert(message) {
+            const alertBox = document.getElementById("alert-box");
+            alertBox.innerText = message;
+            alertBox.classList.add("visible");
+            setTimeout(() => alertBox.classList.remove("visible"), 2000);
+        }
+
+        // Map setup
+        const map = L.map('map').setView([0, -30], 3);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+        }).addTo(map);
+        L.marker([0, -30]).addTo(map).bindPopup("🚤 Boat Location").openPopup();
     </script>
 </body>
 </html>
