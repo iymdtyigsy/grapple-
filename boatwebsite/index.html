@@ -44,9 +44,9 @@
 
             <!-- Controls -->
             <div class="controls">
-                <h3>⚙️ Test Tube Control</h3>
-                <button onclick="toggleTube(true)">Dip Tube</button>
-                <button onclick="toggleTube(false)">Raise Tube</button>
+                <h3>⚙️ Pump Control</h3>
+                <button onclick="toggleTube(true)">Start Pump</button>
+                <button onclick="toggleTube(false)">Stop Pump</button>
 
                 <h3>🛠 Oil Retrieval</h3>
                 <button onclick="toggleOil(true)">Start Collection</button>
@@ -139,7 +139,7 @@
         // ------------------------------
         // Button handlers
         function toggleTube(on) {
-            showInlineAlert(on ? "Test Tube Dipping Started" : "Test Tube Raised", "success");
+            showInlineAlert(on ? "Pump Started" : "Pump Stopped", "success");
         }
 
         function toggleOil(on) {
